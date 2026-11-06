@@ -1,0 +1,6 @@
+# Application configuration containing database credentials - never commit this.
+config/config.php
+
+# OS files
+.DS_Store
+Thumbs.db

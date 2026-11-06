@@ -1,0 +1,69 @@
+<?php
+declare(strict_types=1);
+
+/*
+ * Employee Management & Payroll System - Phase 1
+ * Configuration file
+ *
+ * INSTRUCTIONS:
+ *   1. Copy this file to config.php in the same directory:
+ *        cp config/config.php.example config/config.php
+ *   2. Edit the values below to match your database credentials.
+ *   3. Never commit config.php to version control and never share it.
+ *
+ * This file contains sensitive database credentials. It is protected from
+ * direct browser access by config/.htaccess (Require all denied / Deny from all).
+ */
+
+// --------------------------------------------------------------------------
+// Database connection
+// --------------------------------------------------------------------------
+// Database host. On InfinityFree this is the SQL server hostname shown in
+// the hosting control panel (e.g. sql123.infinityfree.com). 'localhost'
+// is correct on many other shared hosts.
+define('APP_DB_HOST', 'localhost');
+
+// Database name created in phpMyAdmin / the hosting control panel.
+define('APP_DB_NAME', 'employee_payroll');
+
+// Database user name.
+define('APP_DB_USER', 'your_database_user');
+
+// Database user password.
+define('APP_DB_PASS', 'your_database_password');
+
+// Character set for the connection. utf8mb4 is standard on MySQL/MariaDB.
+define('APP_DB_CHARSET', 'utf8mb4');
+
+// --------------------------------------------------------------------------
+// Application settings
+// --------------------------------------------------------------------------
+define('APP_NAME', 'Employee Management System');
+
+// Base URL of the application, with trailing slash.
+// Examples: 'https://example.com/'  or  'https://example.com/empsys/'
+// Leave the trailing slash in place; it is used to build links and asset URLs.
+define('APP_BASE_URL', 'https://your-domain.com/');
+
+// Name of the PHP session cookie. Changing this invalidates existing sessions.
+define('APP_SESSION_NAME', 'emp_sys_session');
+
+// --------------------------------------------------------------------------
+// Security settings
+// --------------------------------------------------------------------------
+// Maximum failed login attempts from one IP address before a temporary lockout.
+define('APP_LOGIN_MAX_ATTEMPTS', 5);
+
+// Lockout duration in minutes.
+define('APP_LOGIN_LOCKOUT_MINUTES', 30);
+
+// How long login attempt records are kept (attempts older than this are purged).
+define('APP_ATTEMPT_RETENTION_HOURS', 24);
+
+// --------------------------------------------------------------------------
+// Runtime safety (production defaults)
+// --------------------------------------------------------------------------
+// Do not display PHP errors to the browser on shared hosting. Enable
+// display_errors temporarily in this file only while debugging.
+ini_set('display_errors', '0');
+error_reporting(E_ALL);

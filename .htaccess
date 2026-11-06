@@ -1,0 +1,17 @@
+# Employee Management & Payroll System - Phase 1
+# Apache configuration for shared hosting (InfinityFree-compatible).
+#
+# This file is read by Apache on every request. Only directives supported
+# by the hosting environment take effect; unsupported ones are ignored
+# safely inside <IfModule> blocks.
+
+# Disable directory listings
+Options -Indexes
+
+# Default character set for served content
+AddDefaultCharset utf-8
+
+# Rewrite engine is available if clean URLs are wanted in later phases.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
