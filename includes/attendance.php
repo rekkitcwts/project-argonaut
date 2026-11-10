@@ -25,7 +25,8 @@ function attendance_get_open(PDO $pdo, int $employee_id, string $work_date): ?ar
          LIMIT 1'
     );
     $stmt->execute([$employee_id, $work_date]);
-    return $stmt->fetch();
+    $result = $stmt->fetch();
+    return $result === false ? null : $result;
 }
 
 /*
