@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/attendance.php';
 
 global $pdo;
 
-$employeeCode = trim($_GET['employee_code'] ?? $_POST['employee_code'] ?? '');
+$employeeCode = trim($_POST['employee_code'] ?? '');
 $employee = null;
 $openRecord = null;
 $action = 'time_in';
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('error', 'Could not record attendance. Please try again.');
         }
     }
-    redirect(url('attendance.php') . '?employee_code=' . urlencode($employeeCode));
+    redirect(url('attendance.php'));
 }
 
 require __DIR__ . '/includes/layout-header.php';
