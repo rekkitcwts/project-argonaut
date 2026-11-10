@@ -201,10 +201,56 @@ The following are explicitly out of scope for Phase 1:
 
 - Payroll calculations, payslips, and payment processing
 - Salary, bank account, tax, and deduction storage
-- Attendance and time tracking
 - Financial reports
 
 These will be added in later phases only after this foundation is stable.
+
+## Phase 2: Attendance and Working Hours
+
+Phase 2 adds employee time-in / time-out tracking.
+
+### New database table
+
+`attendance` — one row per employee per work date:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INT UNSIGNED PK | Auto-increment |
+| employee_id | INT UNSIGNED FK | References employees.employee_id |
+| work_date | DATE | Calendar date of the shift |
+| time_in | TIME | Clock-in time |
+| time_out | TIME | NULL until the employee clocks out |
+| created_at | TIMESTAMP | Record creation time |
+| updated_at | TIMESTAMP | Auto-updated on change |
+
+A unique key on `(employee_id, work_date)` prevents duplicate same-day entries.
+
+### Deployment
+
+- Fresh installs: `sql/schema.sql` now includes the `attendance` table.
+- Existing Phase 1 installs: import `sql/schema_attendance_phase2.sql` in phpMyAdmin.
+
+### How it works
+
+**Employee time clock (`attendance.php`)**
+
+- A single input where the employee types their Employee ID (e.g. `EMP-0001`).
+- The server looks up the employee. Unknown or inactive IDs are rejected.
+- If the employee has no open time-in record for today, submitting records a time-in.
+- If they have an open time-in record, submitting records a time-out and computes the hours worked.
+- Confirmation messages: `"Timed in at 8:03 AM."` / `"Timed out at 5:12 PM — 9h 9m recorded."`
+- Errors: unknown/inactive ID, already timed in, no open record to time out from.
+
+**Admin view (`admin/attendance.php`)**
+
+- Administrators see a read-only list of attendance for a chosen date (defaults to today), showing employee, time in, time out, hours worked, and when the record was created.
+- A date filter lets you view any day.
+
+### Notes
+
+- No login is required to use the time clock; the employee identifies themselves by typing their Employee ID. Place the kiosk accordingly.
+- `hours_worked` is computed on-the-fly from `time_in`/`time_out` and is not stored as a column.
+- No payroll, salary, overtime, shift, or leave logic is included.
 
 ## License
 
