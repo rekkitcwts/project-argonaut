@@ -87,11 +87,16 @@ CREATE TABLE IF NOT EXISTS attendance (
     work_date DATE NOT NULL,
     time_in TIME DEFAULT NULL,
     time_out TIME DEFAULT NULL,
+    hours_worked DECIMAL(6,2) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    edited_at TIMESTAMP NULL DEFAULT NULL,
+    edited_by INT UNSIGNED DEFAULT NULL,
+    edit_reason VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uk_attendance_employee_date (employee_id, work_date),
     KEY idx_attendance_employee (employee_id),
     KEY idx_attendance_date (work_date),
-    CONSTRAINT fk_attendance_employee FOREIGN KEY (employee_id) REFERENCES employees (employee_id)
+    CONSTRAINT fk_attendance_employee FOREIGN KEY (employee_id) REFERENCES employees (employee_id),
+    CONSTRAINT fk_attendance_edited_by FOREIGN KEY (edited_by) REFERENCES employees (employee_id)
 ) ENGINE=InnoDB;

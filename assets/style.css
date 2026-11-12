@@ -331,6 +331,16 @@ tr:hover td {
     color: #374151;
 }
 
+.badge-edited {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-incomplete {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 /* Employee details view */
 .detail-table td:first-child {
     width: 30%;
