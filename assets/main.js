@@ -32,4 +32,20 @@
             }
         });
     });
+
+    // Running clock on the time clock kiosk (HH:MM:SS AM/PM, computer local time).
+    var clockEl = document.getElementById('clock');
+    if (clockEl) {
+        function updateClock() {
+            var now = new Date();
+            clockEl.textContent = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
 })();

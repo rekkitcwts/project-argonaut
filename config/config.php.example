@@ -40,6 +40,11 @@ define('APP_DB_CHARSET', 'utf8mb4');
 // --------------------------------------------------------------------------
 define('APP_NAME', 'Employee Management System');
 
+// Server timezone used for all date/time values stored in the database.
+// Change this to your local timezone (e.g. 'Asia/Manila', 'America/New_York').
+// See https://www.php.net/manual/en/timezones.php for the full list.
+define('APP_TIMEZONE', 'UTC');
+
 // Base URL of the application, with trailing slash.
 // Examples: 'https://example.com/'  or  'https://example.com/empsys/'
 // Leave the trailing slash in place; it is used to build links and asset URLs.

@@ -12,19 +12,23 @@ if (!defined('APP_DB_HOST')) {
 }
 
 /*
- * Return the open (time_out IS NULL) attendance record for an employee on a
- * given work date, or null when none exists. Enforces "one open record per
- * employee at a time" together with the unique (employee_id, work_date) key.
+ * Return the single open (time_out IS NULL) attendance record for an
+ * employee, regardless of what calendar date it was created on. This is what
+ * makes night shifts work: an employee who timed in at 23:48 on Nov 15 can
+ * time out at 04:43 on Nov 16 by closing that same open record.
+ *
+ * Returns null when no open record exists.
  */
-function attendance_get_open(PDO $pdo, int $employee_id, string $work_date): ?array
+function attendance_get_open_record(PDO $pdo, int $employee_id): ?array
 {
     $stmt = $pdo->prepare(
         'SELECT id, employee_id, work_date, time_in, time_out
          FROM attendance
-         WHERE employee_id = ? AND work_date = ? AND time_out IS NULL
+         WHERE employee_id = ? AND time_out IS NULL
+         ORDER BY work_date DESC, time_in DESC
          LIMIT 1'
     );
-    $stmt->execute([$employee_id, $work_date]);
+    $stmt->execute([$employee_id]);
     $result = $stmt->fetch();
     return $result === false ? null : $result;
 }
@@ -41,12 +45,18 @@ function attendance_format_duration(int $seconds): string
 }
 
 /*
- * Return the difference (time_out - time_in) in seconds for two HH:MM:SS
- * values on the same calendar day. May be negative if times are out of order.
+ * Return the difference (time_out - time_in) in seconds.
+ * Handles cross-midnight shifts: if time_out is earlier than time_in (e.g.
+ * time_in 23:48, time_out 04:43 the next day), 24 hours are added so the
+ * duration is positive.
  */
 function attendance_seconds_between(string $time_in, string $time_out): int
 {
     $in = new DateTime('1970-01-01 ' . $time_in);
     $out = new DateTime('1970-01-01 ' . $time_out);
-    return (int) ($out->getTimestamp() - $in->getTimestamp());
+    $seconds = (int) ($out->getTimestamp() - $in->getTimestamp());
+    if ($seconds < 0) {
+        $seconds += 86400; // add 24 hours for cross-midnight shifts
+    }
+    return $seconds;
 }

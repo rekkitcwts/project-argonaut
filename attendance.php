@@ -28,8 +28,7 @@ if ($employeeCode !== '') {
     } elseif ($employee['employment_status'] !== 'active') {
         $lookupError = 'This employee account is not active.';
     } else {
-        $today = date('Y-m-d');
-        $openRecord = attendance_get_open($pdo, (int) $employee['employee_id'], $today);
+        $openRecord = attendance_get_open_record($pdo, (int) $employee['employee_id']);
         $action = $openRecord ? 'time_out' : 'time_in';
     }
 }
@@ -40,19 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!$employee || $employee['employment_status'] !== 'active') {
         flash('error', 'Unknown or inactive employee ID.');
     } else {
-        $today = date('Y-m-d');
         $empId = (int) $employee['employee_id'];
         try {
             if ($action === 'time_in') {
-                // Double-check no open record exists (defends against double time-in).
-                $existing = attendance_get_open($pdo, $empId, $today);
+                // Double-check no open record exists at all (defends against
+                // double time-in across midnight / night shifts).
+                $existing = attendance_get_open_record($pdo, $empId);
                 if ($existing) {
-                    flash('error', 'You have already timed in today.');
+                    flash('error', 'You have already timed in. Please time out first.');
                 } else {
                     $stmt = $pdo->prepare(
                         'INSERT INTO attendance (employee_id, work_date, time_in)
                          VALUES (?, ?, ?)'
                     );
+                    $today = date('Y-m-d');
                     $stmt->execute([$empId, $today, date('H:i:s')]);
                     flash('success', 'Timed in at ' . date('g:i A') . '.');
                 }
@@ -83,6 +83,8 @@ require __DIR__ . '/includes/layout-header.php';
 <div class="form">
   <div class="page-header"><h1>Time Clock</h1></div>
 
+  <div id="clock" style="font-size:1.25rem;font-weight:700;text-align:center;margin-bottom:1rem;letter-spacing:0.05em;">--:--:--</div>
+
   <?= flash_display() ?>
 
   <?php if ($lookupError !== null): ?>
@@ -105,8 +107,8 @@ require __DIR__ . '/includes/layout-header.php';
         <input type="text" readonly
                value="<?= h($employee['first_name'] . ' ' . $employee['last_name']) ?> (<?= h($employee['employee_code']) ?>)">
         <small class="note"><?= $action === 'time_in'
-            ? 'No open time-in today. Press Time In to start your shift.'
-            : 'You have an open time-in today. Press Time Out to end your shift.' ?></small>
+            ? 'No open time-in record. Press Time In to start your shift.'
+            : 'You have an open time-in record. Press Time Out to end your shift.' ?></small>
       </div>
     <?php endif; ?>
 

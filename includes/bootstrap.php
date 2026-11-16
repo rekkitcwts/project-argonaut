@@ -18,6 +18,12 @@ if (!defined('APP_DB_HOST')) {
     require $configFile;
 }
 
+// Set the server timezone so all date()/time() values are stored in local
+// time, not UTC. Falls back to the server default if APP_TIMEZONE is not set.
+if (defined('APP_TIMEZONE')) {
+    @date_default_timezone_set(APP_TIMEZONE);
+}
+
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/auth.php';
